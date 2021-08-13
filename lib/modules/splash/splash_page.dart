@@ -5,7 +5,7 @@ class SplashPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppTheme.colors.background,
+      backgroundColor: AppTheme.colors.backgroundPrimary,
       body: Container(
         decoration: BoxDecoration(
           gradient: AppTheme.gradients.background,
