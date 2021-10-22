@@ -1,37 +1,35 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'package:google_sign_in/google_sign_in.dart';
-import 'package:sign_in_with_apple/sign_in_with_apple.dart';
-import 'package:split_it/dependency_injector.dart';
+import 'package:split_it/modules/login/presentation/pages/login/login_service.dart';
+import 'package:split_it/modules/login/presentation/pages/login/login_state.dart';
 import 'package:split_it/modules/login/presentation/pages/login/login_controller.dart';
 import 'package:split_it/modules/login/presentation/widgets/social_button.dart';
-import 'package:split_it/theme/app_text_styles.dart';
 import 'package:split_it/theme/app_theme.dart';
 
-
-class LoginPage extends StatelessWidget {
-  const LoginPage({ Key? key }) : super(key: key);
+class LoginPage extends StatefulWidget {
+  const LoginPage({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
-    return LoginView(
-      controller: serviceLocator.get<LoginController>(),
-      
-    );
+  _LoginPageState createState() => _LoginPageState();
+}
+
+class _LoginPageState extends State<LoginPage> {
+  late LoginController controller;
+
+  @override
+  void initState() {
+    controller = LoginController(
+      service: LoginServiceImpl(),
+      onUpdate: () {
+      if (controller.state is LoginStateSuccess) {
+        final user = (controller.state as LoginStateSuccess).user;
+        Navigator.pushReplacementNamed(context, "/home", arguments: user);
+      } else {
+        setState(() {});
+      }
+    });
+    super.initState();
   }
-}
 
-class LoginView extends StatefulWidget {
-  const LoginView({Key? key, required this.controller,}) : super(key: key);
-
-  final LoginController controller;
-
-  @override
-  _LoginViewState createState() => _LoginViewState();
-}
-
-class _LoginViewState extends State<LoginView> {
-  
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -65,19 +63,23 @@ class _LoginViewState extends State<LoginView> {
               SizedBox(
                 height: 32,
               ),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 32),
-                child: SocialButtonWidget(
-                  imagePath: "assets/images/google.png",
-                  label: "Entrar com Google",
-                  onTap: ()  {
-                    widget.controller.googleSignIn();
-                  },
+              if (controller.state is LoginStateLoading) ...[
+                CircularProgressIndicator(),
+              ] else
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 32),
+                  child: SocialButtonWidget(
+                    imagePath: "assets/images/google.png",
+                    label: "Entrar com Google",
+                    onTap: () {
+                      controller.googleSignIn();
+                    },
+                  ),
                 ),
-              ),
               SizedBox(
                 height: 12,
               ),
+              // ignore: todo
               //TODO: EFETUAR CONFIGURAÇÃO APPLE
               // Padding(
               //   padding: const EdgeInsets.symmetric(horizontal: 32),

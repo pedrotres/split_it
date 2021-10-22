@@ -14,3 +14,7 @@ abstract class LoginState {}
 
     LoginStateSuccess({required this.user,});
   }
+
+  class LoginStateIdle extends LoginState {
+    
+  }
